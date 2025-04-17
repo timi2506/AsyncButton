@@ -1,3 +1,47 @@
+import SwiftUI
+
+struct Showcase: View {
+    @State var simpleTitleRunning = false
+    var body: some View {
+        VStack {
+            AsyncButton("Simple Title", cancellationMessage: "This might break shit!", onRunningChanged: { newValue in
+                simpleTitleRunning = newValue
+            }) {
+                let threeSeconds: UInt64 = 3 * 1_000_000_000
+                do {
+                    try await Task.sleep(nanoseconds: threeSeconds)
+                } catch {
+                    print("Sleep was cancelled: \(error)")
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            AsyncButton("Favorites", "star.fill") {
+                let threeSeconds: UInt64 = 3 * 1_000_000_000
+                do {
+                    try await Task.sleep(nanoseconds: threeSeconds)
+                } catch {
+                    print("Sleep was cancelled: \(error)")
+                }
+            }
+            AsyncButton {
+                HStack {
+                    Image(systemName: "flame")
+                    Text("Custom Button")
+                        .fontWeight(.bold)
+                }
+            } action: {
+                let threeSeconds: UInt64 = 3 * 1_000_000_000
+                do {
+                    try await Task.sleep(nanoseconds: threeSeconds)
+                } catch {
+                    print("Sleep was cancelled: \(error)")
+                }
+            }
+        }
+    }
+}
+
 public struct AsyncButton: View {
     @State private var isRunning: Bool = false
     @State private var task: Task<Void, Never>? = nil
@@ -91,4 +135,30 @@ public struct AsyncButton: View {
             view
         }
     }
+}
+
+import UIKit
+
+public func confirmationAlert(_ title: String? = nil, subtitle: String, completion: @escaping (Bool) -> Void) {
+    guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+          let root = scene.windows.first?.rootViewController else {
+        return
+    }
+    
+    let alert = UIAlertController(
+        title: title ?? "Confirm Action",
+        message: subtitle,
+        preferredStyle: .alert
+    )
+    
+    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+        completion(false)
+    })
+    
+    alert.addAction(UIAlertAction(title: "Confirm", style: .default) { _ in
+        completion(true)
+    })
+    
+    root.presentedViewController?.present(alert, animated: true)
+    ?? root.present(alert, animated: true)
 }
