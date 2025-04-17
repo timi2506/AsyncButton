@@ -14,9 +14,13 @@ iOS 15+
 
 # Examples
 ```swift
-AsyncButton("Sleep for 3 Seconds", cancellationMessage: "This will stop the sleeping Task!", onRunningChanged: { value in
-print(value.description)
-            }) {
-                try? await Task.sleep(nanoseconds: 3000000000) 
-            }
+AsyncButton(
+    "Sleep for 3 Seconds",
+    cancellationMessage: "This will stop the sleeping Task!",
+    onRunningChanged: { value in
+        print(value.description)
+    }
+) {
+    try? await Task.sleep(nanoseconds: 3_000_000_000)
+}
 ```
